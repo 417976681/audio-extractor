@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audio Extractor · 音乐播放器</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ===================== icon sprite ===================== -->
+<svg class="sprite" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M7 5h3.2v14H7zm6.8 0H17v14h-3.2z"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 24 24"><path d="M7 6h2.4v12H7zm11 0v12l-8.6-6z"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M14.6 6H17v12h-2.4zM6 6l8.6 6L6 18z"/></symbol>
+  <symbol id="i-shuffle" viewBox="0 0 24 24"><path d="M16 4l4 3.5-4 3.5V9h-1.6c-1 0-1.9.5-2.5 1.3l-3 4.2-2-1.4 3-4.3C10.6 7.5 12 6.7 13.5 6.7H16V4zM4 10h2.2c1.5 0 2.9.8 3.7 2.1l1.2 1.7-1.7 1.2-1.2-1.7c-.4-.6-1.1-1-1.9-1H4v-2.3zm12 2.3V15h-1.4c-.6 0-1.1-.2-1.5-.6l-1.4-1.4 1.4-1.4c.4-.4.9-.6 1.5-.6H16v1.3zM6.6 17.5l1.6 1.1-1.2 1.7C6.6 20.8 5.8 21.3 5 21.3H4V19h1c.3 0 .6-.1.8-.4l.8-1.1z"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M7 7h9V4.2L20.8 8 16 11.8V9H8v3.2L4.2 8.6 7 5.8V7zm10 10H8v2.8L3.2 16 8 12.2V15h8v-3.2l3.8 3.6L17 18.2V17z"/></symbol>
+  <symbol id="i-repeat-one" viewBox="0 0 24 24"><path d="M7 7h9V4.2L20.8 8 16 11.8V9H8v3.2L4.2 8.6 7 5.8V7zm10 10H8v2.8L3.2 16 8 12.2V15h8v-3.2l3.8 3.6L17 18.2V17zm-2.2-5.6h1.6v4.2h-2.6v-3.2l1-1z"/></symbol>
+  <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4zM15 8.6a5 5 0 0 1 0 6.8l-1.3-1.4a3 3 0 0 0 0-4l1.3-1.4zm2.6-2.8a9 9 0 0 1 0 12.4l-1.3-1.5a7 7 0 0 0 0-9.4l1.3-1.5z"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.4v13.2L7.2 14.5H4zm12.4 1.1l1.1-1.1 3.2 3.2-1.1 1.1z"/><path d="M14.4 14.4l1.1-1.1 3.2 3.2-1.1 1.1z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l4.7 4.7-1.4 1.4-4.7-4.7A7.5 7.5 0 1 1 10.5 3zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11z"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M17.9 5.5l1.6 1.6L13.6 12l6 4.9-1.6 1.6L12 13.6l-4.9 6L5.5 18l6-4.9-6-4.9L7.1 6.6l4.9 6z"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M12 5V2L7.5 6.5 12 11V8a5.5 5.5 0 1 1-5.5 5.5H4.4A7.6 7.6 0 1 0 12 5z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M11 3h2v9h3.2L12 17 7.8 12H11V3zM5 19h14v2H5z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5h4.4l2 2.6h8.6A1.5 1.5 0 0 1 21 9.1v8.4a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5v-11z"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6h13v2H4zm0 5h13v2H4zm0 5h9v2H4zm14.2-9.2l1.4 1.4L15.6 13l-1.9.5.5-1.9z"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M6.5 19a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.6 8.2A4.4 4.4 0 0 1 18 19h-1.5zm4.8-8.8h1.6v5.6l2.1-2.1 1.1 1.1L12 18.9l-4.1-3.1 1.1-1.1 2.3 2.1z"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><path d="M6 10a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm6 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4zm6 0a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></symbol>
+  <symbol id="i-up" viewBox="0 0 24 24"><path d="M11 6.6l1.4-1.4 6.6 6.6-1.4 1.4-4.6-4.6V19h-2V8.6l-4.6 4.6-1.4-1.4z"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-12.5V2h0v2.5zm0 17V19h0v2.5zM2 12h2.5v0H2zm17.5 0H22v0h-2.5zM4.9 4.9l1.8 1.8-1.8-1.8zm12.4 12.4l1.8 1.8-1.8-1.8zm1.8-12.4l-1.8 1.8 1.8-1.8zM6.7 17.3l-1.8 1.8 1.8-1.8z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12.7 3a9 9 0 1 0 8.3 12.1A7 7 0 0 1 12.7 3z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M9.6 16.2L5.4 12l-1.4 1.4 5.6 5.6L20.4 7.6 19 6.2z"/></symbol>
+  <symbol id="i-window" viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 4h16v10H4zm2 2v6h12v-6z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zm-1 4h2v2h-2zm0 4h2v6h-2z"/></symbol>
+  <symbol id="i-lyric" viewBox="0 0 24 24"><path d="M12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7zm0-9.6V3h0v3.1a5.6 5.6 0 0 1 4 5.4v3.2a3.6 3.6 0 1 1-7.2 0v-3.2a5.6 5.6 0 0 1 3.2-5M8.4 11.3H6.6a1.9 1.9 0 0 0-1.9 1.9 1.9 1.9 0 0 0 1.9 1.9h1.8zm7.2 0h1.8a1.9 1.9 0 0 1 1.9 1.9 1.9 1.9 0 0 1-1.9 1.9h-1.8z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M9 3h6l1 2h4v2H4V5h4zm-3 6h12l-1 12H7zm4 2v8h1v-8zm3 0v8h1v-8z"/></symbol>
+  <symbol id="i-lan" viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 1 6.36 15.4l-1.42-1.42A7 7 0 1 0 12 19v2a9 9 0 0 1 0-18zm0 4a5 5 0 0 1 3.54 8.54l-1.42-1.42A3 3 0 1 0 12 15v2a5 5 0 0 1 0-10zm0 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></symbol>
+  <symbol id="i-puzzle" viewBox="0 0 24 24"><path d="M10 3a2 2 0 0 1 2 2v1h3a1 1 0 0 1 1 1v3h1a2 2 0 1 1 0 4h-1v3a1 1 0 0 1-1 1h-3v-1a2 2 0 1 0-4 0v1H5a1 1 0 0 1-1-1v-3h1a2 2 0 1 0 0-4H4V7a1 1 0 0 1 1-1h3V5a2 2 0 0 1 2-2z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.3l-1.4-1.3C6 14.8 3 12.1 3 8.9 3 6.2 5.1 4.2 7.7 4.2c1.5 0 3 .7 3.9 1.9l.4.5.4-.5c.9-1.2 2.4-1.9 3.9-1.9C18.9 4.2 21 6.2 21 8.9c0 3.2-3 5.9-7.6 10.1z"/></symbol>
+  <symbol id="i-heart-o" viewBox="0 0 24 24"><path d="M12 20.3l-1.4-1.3C6 14.8 3 12.1 3 8.9 3 6.2 5.1 4.2 7.7 4.2c1.5 0 3 .7 3.9 1.9l.4.5.4-.5c.9-1.2 2.4-1.9 3.9-1.9C18.9 4.2 21 6.2 21 8.9c0 3.2-3 5.9-7.6 10.1zm0-2.1c3.9-3.7 6.6-6.1 6.6-8.5 0-1.6-1.2-2.7-2.9-2.7-1.1 0-2.2.6-2.8 1.6l-.9 1.3-.9-1.3c-.6-1-1.7-1.6-2.8-1.6C6.6 7 5.4 8.1 5.4 9.7c0 2.4 2.7 4.8 6.6 8.5z"/></symbol>
+  <symbol id="i-disc" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zm0 3a6 6 0 1 0 0 12 6 6 0 0 0 0-12zm0 2.2a3.8 3.8 0 1 1 0 7.6 3.8 3.8 0 0 1 0-7.6zm0 2.2a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2z"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M12 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8zm0 9.5c4 0 7.5 2 7.5 4.6V21h-15v-2.9c0-2.6 3.5-4.6 7.5-4.6z"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18zm1 4h-2v6l4.7 2.8 1-1.7-3.7-2.2z"/></symbol>
+</svg>
+
+<div class="ambient" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<button class="menu-fab" id="menuFab" title="菜单 / 分类">
+  <svg class="icon"><use href="#i-list"/></svg>
+</button>
+<div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+
+<div class="app">
+  <!-- ============================ 侧边栏 ============================ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><svg class="icon"><use href="#i-play"/></svg></div>
+      <div class="brand-text">
+        <div class="brand-title">Audio Extractor</div>
+        <div class="brand-sub">本地音乐播放器</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <button class="nav-item is-active" data-view="library">
+        <svg class="icon"><use href="#i-list"/></svg><span>音乐库</span>
+      </button>
+      <button class="nav-item" data-view="extract">
+        <svg class="icon"><use href="#i-cloud"/></svg><span>在线提取</span>
+        <em class="nav-badge" id="taskBadge" hidden>0</em>
+      </button>
+      <button class="nav-item" data-view="lyric">
+        <svg class="icon"><use href="#i-lyric"/></svg><span>歌词</span>
+        <em class="nav-badge nav-badge-dot" id="lyricDot" hidden></em>
+      </button>
+    </nav>
+
+    <div class="cat-scroll">
+      <div class="cat-group">
+        <div class="side-label cat-label-row">
+          <span>播放列表</span>
+          <button class="side-mini" id="addPlaylistBtn" title="新建播放列表">
+            <svg class="icon"><use href="#i-plus"/></svg>
+          </button>
+        </div>
+        <button class="cat-item is-active" data-cat="all">
+          <svg class="icon"><use href="#i-list"/></svg>
+          <span class="cat-name">全部曲目</span><em class="cat-num" id="catNumAll">0</em>
+        </button>
+        <button class="cat-item" data-cat="fav">
+          <svg class="icon"><use href="#i-heart"/></svg>
+          <span class="cat-name">我的收藏</span><em class="cat-num" id="catNumFav">0</em>
+        </button>
+        <div id="catPlaylists" class="cat-list"></div>
+      </div>
+
+      <div class="cat-group">
+        <div class="side-label">按专辑</div>
+        <div id="catAlbums" class="cat-list"></div>
+      </div>
+
+      <div class="cat-group">
+        <div class="side-label">按歌手</div>
+        <div id="catArtists" class="cat-list"></div>
+      </div>
+    </div>
+
+    <div class="side-spacer"></div>
+
+    <div class="side-card">
+      <div class="side-label">曲库目录</div>
+      <div class="side-path" id="libPath" title="">载入中…</div>
+      <div class="side-row">
+        <button class="btn btn-ghost btn-sm" id="browseDir">
+          <svg class="icon"><use href="#i-folder"/></svg>浏览
+        </button>
+        <button class="btn btn-ghost btn-sm" id="revealDir" title="在系统文件管理器中打开">
+          <svg class="icon"><use href="#i-window"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="side-card stats">
+      <div class="stat"><b id="trackCount">0</b><span>首曲目</span></div>
+      <div class="stat"><b id="totalTime">0:00</b><span>总时长</span></div>
+      <div class="stat"><b id="totalSize">0 B</b><span>总大小</span></div>
+    </div>
+
+    <div class="side-foot">
+      <button class="theme-btn" id="themeBtn" title="切换主题">
+        <svg class="icon" id="themeIcon"><use href="#i-moon"/></svg>
+        <span id="themeLabel">深色</span>
+      </button>
+      <button class="theme-btn" id="lanBtn" title="局域网内其它设备也能打开本播放器">
+        <svg class="icon"><use href="#i-lan"/></svg>
+        <span>局域网</span>
+      </button>
+      <button class="theme-btn" id="extBtn" title="浏览器插件：把网页里正在播放的歌抓进曲库">
+        <svg class="icon"><use href="#i-puzzle"/></svg>
+        <span>浏览器插件</span>
+      </button>
+    </div>
+    <div class="side-foot-note muted small">C++ · FFmpeg · libcurl</div>
+  </aside>
+
+  <!-- ============================ 主区域 ============================ -->
+  <main class="main">
+
+    <!-- ---------------------------- 音乐库 ---------------------------- -->
+    <section class="view is-active" id="view-library">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>音乐库</h1>
+          <div class="subtitle" id="libSubtitle">正在载入…</div>
+          <div class="cat-chip" id="catChip" hidden>
+            <svg class="icon cat-chip-ico" id="catChipIco"><use href="#i-disc"/></svg>
+            <span id="catChipText"></span>
+            <button class="cat-chip-x" id="catChipClear" title="返回全部曲目">
+              <svg class="icon"><use href="#i-close"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div class="search">
+            <svg class="icon search-ico"><use href="#i-search"/></svg>
+            <input id="search" type="text" placeholder="搜索标题 / 歌手 / 专辑" autocomplete="off">
+            <button class="search-clear" id="searchClear" title="清空" hidden>
+              <svg class="icon"><use href="#i-close"/></svg>
+            </button>
+          </div>
+          <select id="sortSelect" class="input select-sm" title="排序方式">
+            <option value="recent">最近添加</option>
+            <option value="title">按标题</option>
+            <option value="artist">按歌手</option>
+            <option value="album">按专辑</option>
+            <option value="duration">按时长</option>
+            <option value="size">按大小</option>
+          </select>
+          <button class="btn btn-ghost" id="refreshBtn" title="重新扫描目录">
+            <svg class="icon"><use href="#i-refresh"/></svg>刷新
+          </button>
+          <button class="btn btn-primary" id="playAllBtn">
+            <svg class="icon"><use href="#i-play"/></svg>播放全部
+          </button>
+        </div>
+      </header>
+
+      <div class="hero" id="hero">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-inner">
+          <div class="hero-cover" id="heroCover"><span>♪</span></div>
+          <div class="hero-meta">
+            <div class="hero-eyebrow" id="heroEyebrow">未在播放</div>
+            <div class="hero-title" id="heroTitle">选择一首曲目</div>
+            <div class="hero-artist" id="heroArtist">点击列表中的任意曲目即可开始播放</div>
+            <div class="hero-tags">
+              <span class="tag" id="heroFormat">—</span>
+              <span class="tag" id="heroBitrate">—</span>
+              <span class="tag" id="heroRate">—</span>
+              <span class="tag" id="heroAlbum" hidden></span>
+            </div>
+          </div>
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-xl" id="heroPlay" disabled>
+              <svg class="icon" id="heroPlayIcon"><use href="#i-play"/></svg><span id="heroPlayText">播放</span>
+            </button>
+            <button class="btn btn-ghost" id="heroReveal" disabled title="在文件夹中显示">
+              <svg class="icon"><use href="#i-folder"/></svg>
+            </button>
+            <button class="btn btn-ghost" id="heroDownload" disabled title="下载到本地">
+              <svg class="icon"><use href="#i-download"/></svg>
+            </button>
+            <button class="btn btn-ghost" id="heroLyric" disabled title="查看 / 获取歌词">
+              <svg class="icon"><use href="#i-lyric"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="list-head">
+        <span>#</span><span>标题</span><span>艺术家</span><span>专辑</span><span>时长</span><span>大小</span><span></span>
+      </div>
+
+      <div class="track-list" id="trackList"></div>
+
+      <div class="empty" id="emptyLib" hidden>
+        <div class="empty-ico"><svg class="icon"><use href="#i-list"/></svg></div>
+        <div class="empty-title">曲库还是空的</div>
+        <div class="empty-sub">到「在线提取」粘贴视频链接，完成后会自动出现在这里；<br>也可以点左侧「浏览」换一个已有音乐的目录。</div>
+        <div class="empty-actions">
+          <button class="btn btn-primary" id="goExtract">去提取音频</button>
+          <button class="btn btn-ghost" id="goBrowse">浏览目录</button>
+        </div>
+      </div>
+
+      <div class="empty" id="emptySearch" hidden>
+        <div class="empty-ico"><svg class="icon"><use href="#i-search"/></svg></div>
+        <div class="empty-title">没有匹配的曲目</div>
+        <div class="empty-sub">换个关键词试试。</div>
+        <button class="btn btn-ghost" id="clearSearch">清空搜索</button>
+      </div>
+
+      <div class="empty" id="emptyCat" hidden>
+        <div class="empty-ico"><svg class="icon"><use href="#i-heart"/></svg></div>
+        <div class="empty-title" id="emptyCatTitle">这个分类还没有曲目</div>
+        <div class="empty-sub" id="emptyCatSub"></div>
+        <button class="btn btn-ghost" id="emptyCatBack">返回全部曲目</button>
+      </div>
+    </section>
+
+    <!-- --------------------------- 在线提取 --------------------------- -->
+    <section class="view" id="view-extract">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>在线提取</h1>
+          <div class="subtitle">粘贴视频链接，后台下载并转码，完成后自动进入曲库</div>
+        </div>
+      </header>
+
+      <div class="card">
+        <form id="extractForm" autocomplete="off">
+          <div class="field">
+            <label for="urlInput">视频链接</label>
+            <input id="urlInput" class="input" type="text"
+                   placeholder="https://www.bilibili.com/video/BV…  /  https://b23.tv/xxxx  /  https://youtu.be/xxxx  /  https://v.douyin.com/xxxx  /  m3u8 直播源  /  直链媒体">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="outInput">保存为（可选）</label>
+              <input id="outInput" class="input" type="text" placeholder="留空则自动使用视频标题">
+            </div>
+            <div class="field field-sm">
+              <label for="fmtSelect">格式</label>
+              <select id="fmtSelect" class="input">
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+              </select>
+            </div>
+            <div class="field field-sm">
+              <label for="brSelect">码率</label>
+              <select id="brSelect" class="input">
+                <option value="320">320 kbps</option>
+                <option value="256">256 kbps</option>
+                <option value="192" selected>192 kbps</option>
+                <option value="128">128 kbps</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" id="extractBtn" type="submit">
+              <svg class="icon"><use href="#i-download"/></svg><span>开始提取</span>
+            </button>
+            <span class="hint">支持 B 站（含 b23.tv 短链）、YouTube、抖音、HLS/m3u8、直链媒体文件</span>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>任务队列</h2>
+          <button class="btn btn-ghost btn-sm" id="clearTasks">清除已完成</button>
+        </div>
+        <div id="taskList" class="task-list"></div>
+        <div class="empty small-empty" id="emptyTasks">
+          <div class="empty-sub">还没有任务。在上面粘贴一个链接试试。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------- 歌词 ----------------------------- -->
+    <section class="view" id="view-lyric">
+      <header class="topbar">
+        <div class="topbar-title">
+          <h1>歌词</h1>
+          <div class="subtitle" id="lyricSubtitle">自动联网检索，命中后存为同名 .lrc，下次播放不再联网</div>
+        </div>
+        <div class="topbar-actions">
+          <div class="offset-ctl" title="整体提前 / 延后歌词">
+            <svg class="icon"><use href="#i-clock"/></svg>
+            <button class="btn btn-ghost btn-sm" id="lyricOffsetDown">−0.5s</button>
+            <span id="lyricOffset">0.0s</span>
+            <button class="btn btn-ghost btn-sm" id="lyricOffsetUp">+0.5s</button>
+          </div>
+          <button class="btn btn-ghost" id="lyricPick">
+            <svg class="icon"><use href="#i-search"/></svg>选择版本
+          </button>
+          <button class="btn btn-primary" id="lyricFetch">
+            <svg class="icon"><use href="#i-cloud"/></svg><span>自动获取</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="lyric-wrap">
+        <aside class="lyric-side">
+          <div class="lyric-cover" id="lyricCover"><span>♪</span></div>
+          <div class="lyric-side-title" id="lyricSideTitle">未在播放</div>
+          <div class="lyric-side-artist" id="lyricSideArtist">—</div>
+          <div class="lyric-tags">
+            <span class="tag" id="lyricSource">—</span>
+            <span class="tag" id="lyricMode" hidden></span>
+          </div>
+          <div class="lyric-side-foot">
+            <button class="btn btn-ghost btn-sm" id="lyricOpenFile" title="在系统里打开 .lrc">编辑 .lrc</button>
+            <button class="btn btn-ghost btn-sm" id="lyricRemove" title="删除本地 .lrc">移除歌词</button>
+          </div>
+        </aside>
+
+        <div class="lyric-body" id="lyricBody">
+          <div class="lyric-inner" id="lyricInner"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ======================= 底部播放控制条 ======================= -->
+<div class="player-bar">
+  <div class="np">
+    <div class="np-cover" id="npCover"><span>♪</span></div>
+    <div class="np-text">
+      <div class="np-title" id="npTitle">未在播放</div>
+      <div class="np-artist" id="npArtist">—</div>
+    </div>
+  </div>
+
+  <div class="transport">
+    <div class="buttons">
+      <button class="ctl" id="shuffleBtn" title="随机播放">
+        <svg class="icon"><use href="#i-shuffle"/></svg>
+      </button>
+      <button class="ctl" id="prevBtn" title="上一首 (←)">
+        <svg class="icon"><use href="#i-prev"/></svg>
+      </button>
+      <button class="ctl ctl-play" id="playBtn" title="播放 / 暂停 (空格)">
+        <svg class="icon" id="playIcon"><use href="#i-play"/></svg>
+      </button>
+      <button class="ctl" id="nextBtn" title="下一首 (→)">
+        <svg class="icon"><use href="#i-next"/></svg>
+      </button>
+      <button class="ctl" id="repeatBtn" title="循环模式">
+        <svg class="icon" id="repeatIcon"><use href="#i-repeat"/></svg>
+      </button>
+    </div>
+    <div class="seek">
+      <span class="time" id="curTime">0:00</span>
+      <div class="bar" id="seekBar">
+        <div class="bar-buffer" id="seekBuffer"></div>
+        <div class="bar-fill" id="seekFill"><i class="bar-thumb"></i></div>
+      </div>
+      <span class="time" id="totTime">0:00</span>
+    </div>
+  </div>
+
+  <div class="volume">
+    <button class="ctl ctl-sm" id="lyricBtn" title="歌词 (L)">
+      <svg class="icon"><use href="#i-lyric"/></svg>
+    </button>
+    <button class="ctl ctl-sm" id="muteBtn" title="静音">
+      <svg class="icon" id="volIcon"><use href="#i-volume"/></svg>
+    </button>
+    <div class="bar bar-vol" id="volBar">
+      <div class="bar-fill" id="volFill"><i class="bar-thumb"></i></div>
+    </div>
+    <span class="vol-num" id="volNum">80</span>
+  </div>
+</div>
+
+<!-- ============================ 右键菜单 ============================ -->
+<div class="ctx-menu" id="ctxMenu" hidden>
+  <button data-act="play"><svg class="icon"><use href="#i-play"/></svg>立即播放</button>
+  <button data-act="queue"><svg class="icon"><use href="#i-check"/></svg>下一首播放</button>
+  <div class="ctx-sep"></div>
+  <button data-act="addto"><svg class="icon"><use href="#i-plus"/></svg>添加到列表…</button>
+  <button data-act="fav"><svg class="icon"><use href="#i-heart"/></svg>收藏 / 取消收藏</button>
+  <div class="ctx-sep"></div>
+  <button data-act="download"><svg class="icon"><use href="#i-download"/></svg>下载到本地</button>
+  <button data-act="reveal"><svg class="icon"><use href="#i-folder"/></svg>在文件夹中显示</button>
+  <div class="ctx-sep"></div>
+  <button data-act="lyric"><svg class="icon"><use href="#i-lyric"/></svg>联网获取歌词</button>
+  <div class="ctx-sep"></div>
+  <button data-act="delete" class="danger"><svg class="icon"><use href="#i-trash"/></svg>删除…</button>
+</div>
+
+<!-- ========================= 删除曲目确认 ========================= -->
+<div class="modal" id="delModal" hidden>
+  <div class="modal-card modal-sm">
+    <header class="modal-head">
+      <h2>删除曲目</h2>
+      <button class="ctl ctl-sm" id="delClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-scroll">
+      <div class="del-warn">
+        <svg class="icon"><use href="#i-info"/></svg>
+        <div><b>此操作不可撤销。</b>音频文件会从曲库目录中永久删除，
+        同名的歌词文件（.lrc）也会一起删掉。</div>
+      </div>
+      <div class="del-track">
+        <div class="del-title" id="delTitle">—</div>
+        <div class="del-sub muted" id="delSub">—</div>
+        <div class="del-path muted small" id="delPath">—</div>
+      </div>
+      <label class="del-lyric-row" id="delLrcRow" hidden>
+        <span>这首歌带有本地歌词</span>
+        <b id="delLrcName">—</b>
+      </label>
+    </div>
+    <footer class="modal-foot">
+      <div class="modal-current">删除后会自动刷新全部曲目、收藏与播放列表</div>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="delCancel">取消</button>
+        <button class="btn btn-danger" id="delConfirm">删除并同时删除歌词</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ========================= 目录选择弹窗 ========================= -->
+<div class="modal" id="dirModal" hidden>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>选择曲库目录</h2>
+      <button class="ctl ctl-sm" id="dirClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-path">
+      <button class="btn btn-ghost btn-sm" id="dirUp" title="上一级">
+        <svg class="icon"><use href="#i-up"/></svg>
+      </button>
+      <input class="input" id="dirPathInput" spellcheck="false" placeholder="输入完整路径后回车">
+      <button class="btn btn-ghost btn-sm" id="dirGo">前往</button>
+    </div>
+    <div class="modal-scroll" id="dirList"><div class="modal-loading">载入中…</div></div>
+    <footer class="modal-foot">
+      <div class="modal-current">当前：<span id="dirCurrent">—</span></div>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="dirCancel">取消</button>
+        <button class="btn btn-primary" id="dirSelect">选为曲库目录</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ========================= 歌词结果弹窗 ========================= -->
+<div class="modal" id="lyricModal" hidden>
+  <div class="modal-card modal-wide">
+    <header class="modal-head">
+      <h2>选择歌词版本</h2>
+      <button class="ctl ctl-sm" id="lyricModalClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="lyric-query">
+      <input class="input" id="lyricQueryTitle" placeholder="歌曲名" spellcheck="false">
+      <input class="input" id="lyricQueryArtist" placeholder="歌手（可选）" spellcheck="false">
+      <button class="btn btn-ghost btn-sm" id="lyricQueryGo">重新搜索</button>
+    </div>
+    <div class="modal-scroll" id="lyricResults"><div class="modal-loading">载入中…</div></div>
+    <footer class="modal-foot">
+      <div class="modal-current" id="lyricResultsInfo">—</div>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="lyricModalCancel">关闭</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ======================= 新建播放列表弹窗 ======================= -->
+<div class="modal" id="plModal" hidden>
+  <div class="modal-card modal-sm">
+    <header class="modal-head">
+      <h2>新建播放列表</h2>
+      <button class="ctl ctl-sm" id="plClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-body">
+      <input class="input" id="plName" maxlength="40" spellcheck="false"
+             placeholder="列表名称，例如「开车听」「睡前」">
+    </div>
+    <footer class="modal-foot">
+      <div class="modal-current">列表保存在服务端，其它设备也能看到</div>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="plCancel">取消</button>
+        <button class="btn btn-primary" id="plCreate">创建</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ======================= 添加到列表弹窗 ======================= -->
+<div class="modal" id="addToModal" hidden>
+  <div class="modal-card modal-sm">
+    <header class="modal-head">
+      <h2>添加到列表</h2>
+      <button class="ctl ctl-sm" id="addToClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-scroll" id="addToList"></div>
+    <footer class="modal-foot">
+      <div class="modal-current" id="addToInfo">—</div>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="addToNew">新建列表</button>
+        <button class="btn btn-primary" id="addToDone">完成</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ========================= 局域网访问弹窗 ========================= -->
+<div class="modal" id="lanModal" hidden>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>局域网访问</h2>
+      <button class="ctl ctl-sm" id="lanClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-scroll" id="lanList"><div class="modal-loading">载入中…</div></div>
+    <footer class="modal-foot">
+      <div class="modal-current" id="lanInfo">—</div>
+      <div class="modal-btns">
+        <button class="btn btn-ghost" id="lanRefresh">刷新</button>
+        <button class="btn btn-primary" id="lanCancel">关闭</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ======================= 浏览器插件安装引导 ======================= -->
+<div class="modal" id="extModal" hidden>
+  <div class="modal-card">
+    <header class="modal-head">
+      <h2>浏览器插件 · 抓歌到曲库</h2>
+      <button class="ctl ctl-sm" id="extClose"><svg class="icon"><use href="#i-close"/></svg></button>
+    </header>
+    <div class="modal-scroll">
+      <div class="ext-status" id="extStatus">检查扩展文件…</div>
+      <p class="ext-desc">
+        安装后，浏览器里<b>正在播放</b>的歌曲会出现在插件面板中，点一下
+        「提取到全部曲目」，它就会自动下载、转成 MP3 并进入本播放器的曲库。
+        也可以在任意链接上<b>右键 → 提取该链接到曲库</b>。
+      </p>
+      <div class="ext-dir">
+        <code id="extDir">—</code>
+        <button class="btn btn-ghost" id="extCopy">复制路径</button>
+      </div>
+      <ol class="ext-steps">
+        <li>在 Chrome / Edge 地址栏输入 <code>chrome://extensions</code> 并回车（Edge 是 <code>edge://extensions</code>）。</li>
+        <li>打开右上角（Edge 在左侧）的 <b>开发者模式</b>。</li>
+        <li>点击 <b>加载已解压的扩展程序</b>，选择上面复制目录里的 <code>extension</code> 文件夹。</li>
+        <li>到任意音乐网页播放歌曲，点浏览器工具栏里的紫色音符图标即可抓取。</li>
+      </ol>
+      <div class="ext-note muted small">插件只与本机服务通信（默认 <code>http://127.0.0.1:8080</code>），不经过任何第三方。</div>
+    </div>
+    <footer class="modal-foot">
+      <div class="modal-current" id="extInfo">—</div>
+      <div class="modal-btns">
+        <button class="btn btn-primary" id="extCancel">关闭</button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<audio id="audio" preload="metadata"></audio>
+
+<script src="/app.js"></script>
+</body>
+</html>

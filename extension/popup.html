@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>抓歌到曲库</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="logo"></span>
+    <div class="brand-text">
+      <div class="bt-title">抓歌到曲库</div>
+      <div class="bt-sub" id="srvState">检查本地服务…</div>
+    </div>
+  </div>
+  <div class="top-acts">
+    <button class="icon-btn" id="btnOpen" title="打开本地播放器">
+      <svg viewBox="0 0 24 24"><path d="M4 5h16v2H4zm0 4h16v10H4zm2 2v6h12v-6z"/></svg>
+    </button>
+    <button class="icon-btn" id="btnSet" title="设置">
+      <svg viewBox="0 0 24 24"><path d="M12 8.6a3.4 3.4 0 1 1 0 6.8 3.4 3.4 0 0 1 0-6.8zm9 3.4c0 .5 0 .9-.1 1.3l2 1.5-2 3.4-2.3-.9c-.7.6-1.4 1-2.3 1.3L15.9 21H8.1l-.4-2.4c-.8-.3-1.6-.7-2.3-1.3l-2.3.9-2-3.4 2-1.5a8 8 0 0 1 0-2.6l-2-1.5 2-3.4 2.3.9c.7-.6 1.5-1 2.3-1.3L8.1 3h7.8l.4 2.4c.8.3 1.6.7 2.3 1.3l2.3-.9 2 3.4-2 1.5c.1.4.1.8.1 1.3z"/></svg>
+    </button>
+  </div>
+</header>
+
+<section class="panel" id="setPanel" hidden>
+  <label class="fld">本地服务地址
+    <input id="cfgUrl" placeholder="http://127.0.0.1:8080" spellcheck="false">
+  </label>
+  <div class="row">
+    <label class="fld">格式
+      <select id="cfgFormat"><option value="mp3">MP3</option><option value="wav">WAV</option></select>
+    </label>
+    <label class="fld">码率
+      <select id="cfgBitrate">
+        <option value="128">128 kbps</option>
+        <option value="192">192 kbps</option>
+        <option value="256">256 kbps</option>
+        <option value="320">320 kbps</option>
+      </select>
+    </label>
+  </div>
+  <div class="row row-end">
+    <button class="btn" id="cfgReset">恢复默认</button>
+    <button class="btn primary" id="cfgSave">保存</button>
+  </div>
+</section>
+
+<section class="panel tab-panel">
+  <div class="tab-title" id="tabTitle">当前标签</div>
+  <div class="tab-sub" id="tabSub">—</div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <span>检测到音源</span>
+    <button class="mini" id="btnRescan">重新检测</button>
+  </div>
+  <div class="hint" id="listHint">正在检测…</div>
+  <div class="cands" id="cands"></div>
+</section>
+
+<section class="panel">
+  <label class="fld">保存为
+    <input id="name" placeholder="歌曲名" spellcheck="false">
+  </label>
+  <button class="btn primary big" id="btnGo" disabled>提取到全部曲目</button>
+  <div class="prog" id="prog" hidden>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="prog-label" id="progLabel">排队中…</div>
+  </div>
+  <div class="err" id="err" hidden></div>
+</section>
+
+<footer id="foot" hidden>
+  <span id="footText"></span>
+  <button class="btn ghost" id="btnLib">在曲库中查看</button>
+</footer>
+
+<script src="api.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>

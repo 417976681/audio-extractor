@@ -1,0 +1,158 @@
+:root {
+  --bg: #14141a;
+  --bg2: #1c1c25;
+  --card: #21212c;
+  --line: #2f2f3d;
+  --text: #ececf3;
+  --muted: #9a9aae;
+  --accent: #7c5cff;
+  --accent2: #5b8cff;
+  --ok: #35d07f;
+  --bad: #ff6b6b;
+  --warn: #ffb454;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  width: 380px;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.5 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+/* ------------------------------- header ------------------------------- */
+.top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+}
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.logo {
+  width: 28px; height: 28px; border-radius: 8px; flex: none;
+  background: rgba(255, 255, 255, .22);
+  position: relative;
+}
+.logo::after {
+  content: ""; position: absolute; inset: 0;
+  background: no-repeat center/16px 16px
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'><path d='M13 9v10a3 3 0 1 1-2-2.8V12l9-2v8a3 3 0 1 1-2-2.8V11l-5 1z'/></svg>");
+}
+.bt-title { font-weight: 600; font-size: 14px; }
+.bt-sub { font-size: 11px; opacity: .85; display: flex; align-items: center; gap: 5px; }
+.top-acts { display: flex; gap: 6px; }
+.icon-btn {
+  width: 28px; height: 28px; border: 0; border-radius: 8px; cursor: pointer;
+  background: rgba(255, 255, 255, .18); display: grid; place-items: center;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, .32); }
+.icon-btn svg { width: 16px; height: 16px; fill: #fff; }
+
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--muted); }
+.dot.ok { background: var(--ok); box-shadow: 0 0 0 3px rgba(53, 208, 127, .25); }
+.dot.bad { background: var(--bad); box-shadow: 0 0 0 3px rgba(255, 107, 107, .25); }
+
+/* ------------------------------- panels ------------------------------- */
+.panel { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; color: var(--muted); margin-bottom: 8px;
+}
+.panel-head span { letter-spacing: .04em; }
+.mini {
+  border: 1px solid var(--line); background: transparent; color: var(--muted);
+  border-radius: 6px; padding: 2px 8px; font-size: 11px; cursor: pointer;
+}
+.mini:hover { color: var(--text); border-color: var(--accent); }
+
+.tab-panel { background: var(--bg2); }
+.tab-title {
+  font-size: 13px; font-weight: 600; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.tab-sub { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ------------------------------ fields ------------------------------- */
+.fld { display: block; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.fld input, .fld select { display: block; margin-top: 4px; }
+input, select {
+  width: 100%; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--text);
+  font-size: 13px; outline: none;
+}
+input:focus, select:focus { border-color: var(--accent); }
+.row { display: flex; gap: 10px; }
+.row > .fld { flex: 1; }
+.row-end { justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--text);
+  border-radius: 8px; padding: 7px 12px; font-size: 12px; cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.btn.primary:hover { filter: brightness(1.1); }
+.btn.big { width: 100%; padding: 10px; font-size: 13px; margin-top: 4px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.ghost { background: transparent; }
+
+/* ----------------------------- candidates ---------------------------- */
+.hint { font-size: 12px; color: var(--muted); padding: 6px 0 2px; }
+.cands { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.cand {
+  display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--card);
+  cursor: pointer;
+}
+.cand:hover { border-color: #4a4a63; }
+.cand.is-on { border-color: var(--accent); background: rgba(124, 92, 255, .12); }
+.cand input { width: auto; margin: 2px 0 0; accent-color: var(--accent); }
+.cand-main { min-width: 0; flex: 1; }
+.cand-title {
+  font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cand-sub {
+  font-size: 11px; color: var(--muted); margin-top: 3px;
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.cand-url {
+  font-size: 10.5px; color: #6f6f86; word-break: break-all; margin-top: 3px;
+  max-height: 28px; overflow: hidden;
+}
+.tag {
+  font-size: 10px; padding: 1px 6px; border-radius: 999px;
+  background: rgba(255, 255, 255, .08); color: var(--muted);
+}
+.tag.play { background: rgba(53, 208, 127, .18); color: var(--ok); }
+.tag.hls { background: rgba(91, 140, 255, .18); color: var(--accent2); }
+.tag.page { background: rgba(255, 180, 84, .16); color: var(--warn); }
+
+/* ------------------------------ progress ----------------------------- */
+.prog { margin-top: 10px; }
+.bar { height: 6px; border-radius: 999px; background: var(--card); overflow: hidden; }
+.bar > i {
+  display: block; height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width .35s ease;
+}
+.prog-label { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.err {
+  margin-top: 10px; padding: 8px 10px; border-radius: 8px; font-size: 12px;
+  background: rgba(255, 107, 107, .12); color: #ffb3b3; border: 1px solid rgba(255, 107, 107, .3);
+}
+
+/* ------------------------------- footer ------------------------------ */
+footer {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 10px 14px; font-size: 12px; color: var(--muted);
+}
+footer span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f6f6fa; --bg2: #fff; --card: #fff; --line: #e4e4ee;
+    --text: #22222c; --muted: #6d6d80;
+  }
+  .logo { background: rgba(255, 255, 255, .28); }
+}

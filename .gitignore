@@ -1,0 +1,25 @@
+# Build output
+build/
+*.o
+*.obj
+*.exe
+
+# Logs
+*.log
+
+# Local temp artifacts
+out.mp3
+out.wav
+hls_out.mp3
+test.mp4
+test.m3u8
+test*.ts
+
+# Third-party binaries (large; fetch via tools/fetch_deps.* )
+third_party/**/bin/*.dll
+third_party/**/lib/*.dll.a
+third_party/**/lib/*.lib
+third_party/**/lib/*.def
+third_party/**/include/
+third_party/ffmpeg-shared.zip
+third_party/curl/

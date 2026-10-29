@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Audio Extractor · 抓取到曲库",
+  "version": "1.0.0",
+  "description": "把浏览器里正在播放的歌曲一键提取到本地音乐播放器的「全部曲目」。",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "提取当前播放的歌到曲库",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "scripting",
+    "activeTab",
+    "tabs",
+    "notifications"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:*/*",
+    "http://localhost:*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}
