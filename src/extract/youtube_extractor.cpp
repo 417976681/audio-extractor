@@ -187,9 +187,9 @@ MediaSource YouTubeExtractor::extract(const std::string& url,
     // Clients, in priority order. TVHTML5 first because it returns direct
     // stream URLs without the signature / n-throttle requirement.
     std::vector<ClientSpec> clients = {
-        {"TVHTML5", "7.20241028.00.00", "AIzaSyDCU8hByM-4zGqOzgJNmVPYclL4E05V9Y", 95},
-        {"WEB", "2.20241028.00.00", "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8", 1},
-        {"ANDROID", "19.09.37", "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w", 3},
+        {"TVHTML5", "", "", 95},
+        {"WEB", "", "", 1},
+        {"ANDROID", "", "", 3},
     };
 
     std::vector<std::pair<std::string, std::string>> postHeaders;
